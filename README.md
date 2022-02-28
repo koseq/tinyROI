@@ -1,6 +1,6 @@
 # tinyROI
 
-## Download models & get YOLOv4 repository
+## Download models & get the YOLOv4 repository
 
 ```console
 ./download_models.sh
@@ -8,7 +8,7 @@ git clone https://github.com/WongKinYiu/PyTorch_YOLOv4.git
 export PYTHONPATH=$PYTHONPATH:$PWD/PyTorch_YOLOv4
 ```
 
-## Run inference
+## Run the inference
 
 ```console
 python inference.py --save_results
