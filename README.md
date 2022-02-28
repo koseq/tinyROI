@@ -11,5 +11,5 @@ export PYTHONPATH=$PYTHONPATH:$PWD/PyTorch_YOLOv4
 ## Run inference
 
 ```console
-python inference.py --save_results --conf_thresh 0.5
+python inference.py --save_results
 ```
