@@ -13,3 +13,8 @@ export PYTHONPATH=$PYTHONPATH:$PWD/PyTorch_YOLOv4
 ```console
 python inference.py --save_results
 ```
+
+## Acknowledgements
+- [https://github.com/AlexeyAB/darknet](https://github.com/AlexeyAB/darknet)
+- [https://github.com/WongKinYiu/PyTorch_YOLOv4](https://github.com/WongKinYiu/PyTorch_YOLOv4)
+- [https://github.com/xuebinqin/U-2-Net](https://github.com/xuebinqin/U-2-Net)
