@@ -181,9 +181,6 @@ if __name__ == '__main__':
     # NMS
     parser.add_argument('--conf_thresh', type=float, default=0.005)
     parser.add_argument('--iou_thresh', type=float, default=0.45)
-    parser.add_argument('--merge', default=False, action='store_true')
-    parser.add_argument('--agnostic', default=False, action='store_true')
-    parser.add_argument('--classes')
     parser.add_argument('--second_nms', default=False, action='store_true')
     
     # sliding window
@@ -197,11 +194,10 @@ if __name__ == '__main__':
     parser.add_argument('--save_results', default=False, action='store_true')
     parser.add_argument('--out_dir', type=str, default='detections')
     parser.add_argument('--out_json', type=str, default='labels.json')
-    # parser.add_argument('--metrics', default=False, action='store_true')
-    # parser.add_argument('--gt_json', type=str, default='labels-gt.json')
     args = parser.parse_args()
     
     device = torch.device('cuda:0' if torch.cuda.device_count() > 0 and not args.cpu else 'cpu')
+    
     
     if args.save_results:
         os.makedirs(args.out_dir, exist_ok=True)
@@ -233,7 +229,7 @@ if __name__ == '__main__':
             intensor_det = data['image_det'].float().to(device)
             H_orig, W_orig = data['height'].item(), data['width'].item()
             original_shape = (H_orig, W_orig)
-            
+
             if args.save_results:
                 image = cv2.imread(flist[i])
                 
@@ -248,9 +244,8 @@ if __name__ == '__main__':
                     inf_out, 
                     conf_thres = args.conf_thresh, 
                     iou_thres = args.iou_thresh,
-                    merge = args.merge,
-                    classes = args.classes,
-                    agnostic = args.agnostic)[0] # batch==1
+                    merge = True,
+                    agnostic = False)[0] # batch==1
                 img_output = img_output.to(device)
                 img_output[:,:4] *= torch.tensor([W_orig/args.det_inf_size,H_orig/args.det_inf_size,W_orig/args.det_inf_size,H_orig/args.det_inf_size]).to(device)
                 
@@ -287,9 +282,8 @@ if __name__ == '__main__':
                         inf_out, 
                         conf_thres = args.conf_thresh, 
                         iou_thres = args.iou_thresh,
-                        merge = args.merge,
-                        classes = args.classes,
-                        agnostic = args.agnostic)[0] # batch==1
+                        merge = True,
+                        agnostic = False)[0] # batch==1
 
                     output[:,:4] = output[:,:4].to(device) + torch.tensor([xmin,ymin,xmin,ymin]).to(device)
                     if img_output is None:
@@ -298,8 +292,7 @@ if __name__ == '__main__':
                         img_output = torch.cat((img_output.to(device), output.to(device)), 0)
                         
                 if args.second_nms and img_output is not None:
-                    keep = ops.batched_nms(img_output[:,:4], img_output[:,4], img_output[:,5], iou_threshold=args.iou_thresh)
-                    img_output = img_output[keep,:]
+                    img_output = NMS(img_output, iou_thres=args.iou_thresh, redundant=args.redundant, merge=args.merge, max_det=args.max_det, agnostic=args.agnostic) 
                         
             
             if img_output is not None:
